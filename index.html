@@ -1,57 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Birthday Fireworks Surprise 🎆</title>
+<title>Special Surprise ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
 
 <style>
 body{
-    margin:0;
-    font-family:'Comic Sans MS', cursive;
-    text-align:center;
-    overflow:hidden;
-    background:black;
-    color:white;
+margin:0;
+font-family:'Poppins',sans-serif;
+background:linear-gradient(-45deg,#ff0080,#7928ca,#2afadf,#ff4ecd);
+background-size:400% 400%;
+animation:gradient 8s ease infinite;
+color:white;
+overflow:hidden;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
 }
 
-canvas{
-    position:fixed;
-    top:0;
-    left:0;
-    z-index:0;
+@keyframes gradient{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
 }
 
-.container{
-    position:relative;
-    z-index:2;
-    padding:30px;
+.card{
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(20px);
+padding:25px;
+border-radius:25px;
+text-align:center;
+width:90%;
+max-width:420px;
+box-shadow:0 0 40px rgba(255,0,150,0.6);
+z-index:2;
 }
 
-img{
-    width:180px;
-    height:180px;
-    border-radius:50%;
-    border:4px solid white;
-    margin-top:15px;
+input{
+padding:8px;
+border-radius:20px;
+border:none;
+text-align:center;
+margin:5px;
+width:80%;
 }
 
 button{
-    padding:15px 25px;
-    font-size:18px;
-    border:none;
-    border-radius:25px;
-    cursor:pointer;
-    margin:10px;
-    transition:0.3s;
+padding:10px 18px;
+border:none;
+border-radius:20px;
+cursor:pointer;
+margin:6px;
+font-weight:600;
 }
 
-#yesBtn{ background:#00ff88; color:black; }
-#noBtn{ background:#ff4444; color:white; position:relative; }
+#yesBtn{background:#00ffcc;color:black;}
+#noBtn{background:#ff0055;color:white;position:absolute;}
 
-button:hover{ transform:scale(1.1); }
+.hidden{display:none;}
 
-.hidden{ display:none; }
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:0;
+}
+
+img{
+border-radius:15px;
+margin:10px 0;
+}
 </style>
 </head>
 
@@ -59,113 +79,227 @@ button:hover{ transform:scale(1.1); }
 
 <canvas id="fireworks"></canvas>
 
-<audio autoplay loop>
-<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-</audio>
+<!-- STEP 1: NAME INPUT SCREEN -->
+<div class="card" id="nameScreen">
+<h2>Enter Details 💖</h2>
+<input type="text" id="herName" placeholder="Her Name">
+<br>
+<input type="text" id="yourName" placeholder="Your Name">
+<br>
+<input type="password" id="password" placeholder="Secret Password">
+<br>
+<button onclick="startSurprise()">Start Surprise ✨</button>
+</div>
 
-<div class="container">
+<!-- MAIN CONTENT -->
+<div class="card hidden" id="mainContent">
 
-<h1>🎂 Happy Birthday sheetal 🎂</h1>
+<h1 id="typing"></h1>
+<p id="fromText"></p>
 
-<p>
-From Alok💖 <br><br>
-On this legendary day… someone extremely cute was born 😜  
-Yes yes I’m talking about YOU 😎✨  
-</p>
+<div>
+<img id="slideImg" src="photo1.jpg" width="140">
+</div>
 
-<img src="yourphoto.jpg" alt="Memory">
+<p id="countdown"></p>
 
-<h2>Lifetime Birthday Offer 💍</h2>
-<p>
-Free hugs 🤗 <br>
-Unlimited love 💖 <br>
-Daily drama included 😆 <br>
-No refund policy 😌
-</p>
-
-<h2>Will you be mine forever?</h2>
-
+<h3>Will you stay mine forever?</h3>
 <button id="yesBtn" onclick="celebrate()">YES 💖</button>
 <button id="noBtn" onmouseover="moveButton()">NO 🙈</button>
+
+<br>
+<input type="file" accept="audio/*" onchange="loadSong(event)">
+<br>
+<button onclick="playVoice()">Hear My Message 🎤</button>
 
 <h2 id="response" class="hidden"></h2>
 
 </div>
 
+<audio id="music" loop></audio>
+
 <script>
+
+let herName="";
+let yourName="";
+
+// START SURPRISE
+function startSurprise(){
+herName=document.getElementById("herName").value;
+yourName=document.getElementById("yourName").value;
+let pass=document.getElementById("password").value;
+
+if(pass==="170225"){  // change password here
+document.getElementById("nameScreen").classList.add("hidden");
+document.getElementById("mainContent").classList.remove("hidden");
+
+document.getElementById("fromText").innerHTML="From "+yourName+" ❤️";
+typeWriter();
+startCountdown();
+}else{
+alert("Wrong password 😜");
+}
+}
+
+// TYPING EFFECT
+let i=0;
+function typeWriter(){
+let text="🎂 Happy Birthday "+herName+" 🎂";
+if(i<text.length){
+document.getElementById("typing").innerHTML+=text.charAt(i);
+i++;
+setTimeout(typeWriter,80);
+}
+}
+
+// COUNTDOWN
+function startCountdown(){
+let count=5;
+let timer=setInterval(()=>{
+document.getElementById("countdown").innerHTML="Surprise in "+count+"...";
+count--;
+if(count<0){
+clearInterval(timer);
+document.getElementById("countdown").innerHTML="🎉 Surprise Activated 🎉";
+}
+},1000);
+}
+
+// CRAZY MOVING BUTTON
+let moveCount=0;
 function moveButton(){
-    var button=document.getElementById("noBtn");
-    var x=Math.random()*300-150;
-    var y=Math.random()*300-150;
-    button.style.transform="translate("+x+"px,"+y+"px)";
+const btn=document.getElementById("noBtn");
+let maxX=window.innerWidth-btn.offsetWidth;
+let maxY=window.innerHeight-btn.offsetHeight;
+btn.style.left=Math.random()*maxX+"px";
+btn.style.top=Math.random()*maxY+"px";
+moveCount++;
+if(moveCount>15){
+btn.innerHTML="Just press YES 😜";
+}
 }
 
+// CELEBRATE
 function celebrate(){
-    document.getElementById("response").classList.remove("hidden");
-    document.getElementById("response").innerHTML=
-    "YAYYYY!!! 🎆💖 Now fireworks officially start for us forever 😎💍";
-    launchFireworks();
+document.getElementById("response").classList.remove("hidden");
+document.getElementById("response").innerHTML=
+"Now officially mine forever 😍💖 — "+herName+", you are stuck with "+yourName+" forever!";
+launchFireworks();
+confetti();
+heartRain();
+showRing();
 }
 
-/* FIREWORKS SYSTEM */
+// RING
+function showRing(){
+let ring=document.createElement("div");
+ring.innerHTML="💍";
+ring.style.position="fixed";
+ring.style.fontSize="80px";
+ring.style.left="50%";
+ring.style.top="50%";
+ring.style.transform="translate(-50%,-50%) scale(0)";
+ring.style.transition="0.6s ease";
+ring.style.zIndex=9999;
+document.body.appendChild(ring);
+setTimeout(()=>{ring.style.transform="translate(-50%,-50%) scale(1.5)";},100);
+setTimeout(()=>{ring.remove();},2000);
+}
+
+// FIREWORKS
 var canvas=document.getElementById("fireworks");
 var ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;
 canvas.height=window.innerHeight;
 
-window.addEventListener("resize",()=>{
-    canvas.width=window.innerWidth;
-    canvas.height=window.innerHeight;
-});
-
 var particles=[];
 
 function launchFireworks(){
-    setInterval(()=>{
-        let x=Math.random()*canvas.width;
-        let y=Math.random()*canvas.height/2;
-        createExplosion(x,y);
-    },800);
+setInterval(()=>{
+let x=Math.random()*canvas.width;
+let y=Math.random()*canvas.height/2;
+for(let i=0;i<80;i++){
+particles.push({
+x:x,y:y,
+color:"hsl("+Math.random()*360+",100%,50%)",
+speedX:(Math.random()-0.5)*5,
+speedY:(Math.random()-0.5)*5,
+life:100
+});
 }
-
-function createExplosion(x,y){
-    for(let i=0;i<80;i++){
-        particles.push({
-            x:x,
-            y:y,
-            radius:2,
-            color:"hsl("+Math.random()*360+",100%,50%)",
-            speedX:(Math.random()-0.5)*5,
-            speedY:(Math.random()-0.5)*5,
-            life:100
-        });
-    }
+},800);
 }
 
 function animate(){
-    requestAnimationFrame(animate);
-    ctx.fillStyle="rgba(0,0,0,0.2)";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+requestAnimationFrame(animate);
+ctx.fillStyle="rgba(0,0,0,0.2)";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+particles.forEach((p,index)=>{
+p.x+=p.speedX;
+p.y+=p.speedY;
+p.life--;
+ctx.fillStyle=p.color;
+ctx.fillRect(p.x,p.y,3,3);
+if(p.life<=0)particles.splice(index,1);
+});
+}
+animate();
 
-    particles.forEach((p,index)=>{
-        p.x+=p.speedX;
-        p.y+=p.speedY;
-        p.life--;
-
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
-        ctx.fillStyle=p.color;
-        ctx.fill();
-
-        if(p.life<=0){
-            particles.splice(index,1);
-        }
-    });
+// CONFETTI
+function confetti(){
+for(let i=0;i<150;i++){
+let div=document.createElement("div");
+div.style.position="fixed";
+div.style.width="8px";
+div.style.height="8px";
+div.style.background="hsl("+Math.random()*360+",100%,50%)";
+div.style.left=Math.random()*100+"%";
+div.style.top="-10px";
+div.style.transition="top 3s linear";
+document.body.appendChild(div);
+setTimeout(()=>{div.style.top="100%";},10);
+setTimeout(()=>{div.remove();},3000);
+}
 }
 
-animate();
+// HEART RAIN
+function heartRain(){
+setInterval(()=>{
+let heart=document.createElement("div");
+heart.innerHTML="💖";
+heart.style.position="fixed";
+heart.style.left=Math.random()*100+"%";
+heart.style.top="-20px";
+heart.style.fontSize="20px";
+document.body.appendChild(heart);
+setTimeout(()=>heart.remove(),3000);
+},300);
+}
+
+// SLIDESHOW
+let images=["photo1.jpg","photo2.jpg","photo3.jpg"];
+let slideIndex=0;
+setInterval(()=>{
+slideIndex=(slideIndex+1)%images.length;
+document.getElementById("slideImg").src=images[slideIndex];
+},2000);
+
+// MUSIC UPLOAD
+function loadSong(event){
+const audio=document.getElementById("music");
+audio.src=URL.createObjectURL(event.target.files[0]);
+audio.play();
+}
+
+// VOICE MESSAGE
+function playVoice(){
+let msg=new SpeechSynthesisUtterance(
+"Happy Birthday "+herName+". You are the best thing in my life."
+);
+speechSynthesis.speak(msg);
+}
+
 </script>
 
 </body>
-
 </html>
